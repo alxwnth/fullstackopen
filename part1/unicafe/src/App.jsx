@@ -1,6 +1,5 @@
 import { useState } from "react";
 import RatingButtons from "./RatingButtons";
-import Ratings from "./Ratings";
 import Statistics from "./Statistics";
 
 const App = () => {
@@ -29,7 +28,7 @@ const App = () => {
   return (
     <div>
       <RatingButtons handleActions={handleActions} />
-      <Ratings good={good} neutral={neutral} bad={bad} />
+      <h2>statistics</h2>
       <Statistics total={total} ratings={ratings} />
     </div>
   );
