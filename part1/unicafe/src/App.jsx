@@ -1,6 +1,6 @@
 import { useState } from "react";
-import RatingButtons from "./RatingButtons";
-import Statistics from "./Statistics";
+import RatingButtons from "./components/RatingButtons";
+import Statistics from "./components/Statistics";
 
 const App = () => {
   const [good, setGood] = useState(0);
@@ -28,7 +28,6 @@ const App = () => {
   return (
     <div>
       <RatingButtons handleActions={handleActions} />
-      <h2>statistics</h2>
       <Statistics total={total} ratings={ratings} />
     </div>
   );
