@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Anecdote from "./components/Anectode";
 import Rating from "./components/Rating";
+import TopAnecdote from "./components/TopAnecdote";
 
 const App = () => {
   const anecdotes = [
@@ -16,6 +17,7 @@ const App = () => {
 
   const [selected, setSelected] = useState(0);
   const [ratings, setRatings] = useState(new Uint8Array(anecdotes.length));
+  const [topAnecdoteIndex, setTopAnecdoteIndex] = useState(-1);
 
   const handleNextAnecdote = () => {
     setSelected(Math.floor(Math.random() * anecdotes.length));
@@ -24,14 +26,25 @@ const App = () => {
     const ratingsCopy = [...ratings];
     ratingsCopy[selected] += 1;
     setRatings(ratingsCopy);
+    setTopAnecdoteIndex(
+      ratingsCopy.reduce(
+        (maxIndex, n, i, arr) => (n > arr[maxIndex] ? i : maxIndex),
+        0
+      )
+    );
   };
 
   return (
     <>
+      <h2>Anecdote of the day</h2>
       <Anecdote text={anecdotes[selected]} />
       <Rating rating={ratings[selected]} />
       <button onClick={handleNextAnecdote}>next anecdote</button>
       <button onClick={handleVote}>vote</button>
+      <TopAnecdote
+        anecdote={anecdotes[topAnecdoteIndex]}
+        rating={ratings[topAnecdoteIndex]}
+      />
     </>
   );
 };
