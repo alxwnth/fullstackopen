@@ -7,18 +7,22 @@ const Statistics = ({ total, ratings }) => {
     return (
       <>
         <h2>statistics</h2>
-        <StatisticsLine text="good" value={ratings[0]} />
-        <StatisticsLine text="neutral" value={ratings[1]} />
-        <StatisticsLine text="bad" value={ratings[2]} />
-        <StatisticsLine text="all" value={total} />
-        <StatisticsLine
-          text="average"
-          value={(ratings[0] - ratings[2]) / total}
-        />
-        <StatisticsLine
-          text="positive"
-          value={(ratings[0] * 100) / total + "%"}
-        />
+        <table>
+          <tbody>
+            <StatisticsLine text="good" value={ratings[0]} />
+            <StatisticsLine text="neutral" value={ratings[1]} />
+            <StatisticsLine text="bad" value={ratings[2]} />
+            <StatisticsLine text="all" value={total} />
+            <StatisticsLine
+              text="average"
+              value={(ratings[0] - ratings[2]) / total}
+            />
+            <StatisticsLine
+              text="positive"
+              value={(ratings[0] * 100) / total + "%"}
+            />
+          </tbody>
+        </table>
       </>
     );
   }
