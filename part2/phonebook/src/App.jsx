@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -9,7 +12,7 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const [filterName, setFilterName] = useState("");
+  const [nameToFilter, setNameToFilter] = useState("");
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -35,34 +38,30 @@ const App = () => {
   };
 
   const handleFilterNameChange = (event) => {
-    setFilterName(event.target.value);
+    setNameToFilter(event.target.value);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      filter shown with:{" "}
-      <input value={filterName} onChange={handleFilterNameChange} />
+      <Filter
+        nameFilter={nameToFilter}
+        filterHandler={handleFilterNameChange}
+      />
       <h2>add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        addPersonHandler={addPerson}
+        newNameValue={newName}
+        nameChangeHandler={handleNameChange}
+        newNumberValue={newNumber}
+        numberChangeHandler={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <ul>
-        {persons
-          .filter((person) => person.name.match(new RegExp(filterName, "gi")))
-          .map((person) => (
-            <li key={person.name}>
-              {person.name} {person.number}
-            </li>
-          ))}
-      </ul>
+      <Persons
+        persons={persons.filter((person) =>
+          person.name.match(new RegExp(nameToFilter, "gi"))
+        )}
+      />
     </div>
   );
 };
