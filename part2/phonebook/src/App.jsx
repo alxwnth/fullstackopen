@@ -32,6 +32,13 @@ const App = () => {
     setNewNumber("");
   };
 
+  const handleDelete = (person) => {
+    if (confirm(`Delete ${person.name}?`)) {
+      personService.deleteRecord(person.id);
+      setPersons(persons.filter((p) => p.id !== person.id));
+    }
+  };
+
   const handleNameChange = (event) => {
     setNewName(event.target.value);
   };
@@ -64,6 +71,7 @@ const App = () => {
         persons={persons.filter((person) =>
           person.name.match(new RegExp(nameToFilter, "gi"))
         )}
+        deleteHandler={handleDelete}
       />
     </div>
   );

@@ -7,8 +7,13 @@ const getAll = () => {
 };
 
 const create = (personObject) => {
-  const request = axios.post("http://localhost:3001/persons", personObject);
+  const request = axios.post(baseUrl, personObject);
   return request.then((response) => response.data);
 };
 
-export default { getAll, create };
+const deleteRecord = (id) => {
+  const request = axios.delete(`${baseUrl}/${id}`);
+  return request.then((response) => response.data);
+};
+
+export default { getAll, create, deleteRecord };
