@@ -21,8 +21,23 @@ const App = () => {
       name: newName,
       number: newNumber,
     };
-    if (persons.find((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
+    const foundPerson = persons.find((person) => person.name === newName);
+    if (foundPerson) {
+      if (
+        confirm(
+          `${newName} is already added to phonebook, replace the old number with new one?`
+        )
+      ) {
+        personService
+          .replaceRecord(foundPerson.id, personObject)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== foundPerson.id ? person : returnedPerson
+              )
+            );
+          });
+      }
     } else {
       personService.create(personObject).then((person) => {
         setPersons(persons.concat(person));
