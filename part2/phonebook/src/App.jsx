@@ -4,12 +4,15 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import { useEffect } from "react";
 import personService from "./services/persons";
+import NotificationBox from "./components/NotificationBox";
+import "./style.css";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [nameToFilter, setNameToFilter] = useState("");
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((persons) => setPersons(persons));
@@ -45,11 +48,23 @@ const App = () => {
     }
     setNewName("");
     setNewNumber("");
+    displayNotification(`Added ${newName}`);
+  };
+
+  const displayNotification = (text) => {
+    setMessage({
+      text: text,
+      isError: false,
+    });
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   const handleDelete = (person) => {
     if (confirm(`Delete ${person.name}?`)) {
       personService.deleteRecord(person.id);
+      displayNotification(`Deleted ${person.name}`);
       setPersons(persons.filter((p) => p.id !== person.id));
     }
   };
@@ -69,6 +84,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <NotificationBox message={message} />
       <Filter
         nameFilter={nameToFilter}
         filterHandler={handleFilterNameChange}
