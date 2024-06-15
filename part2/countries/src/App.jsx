@@ -13,7 +13,6 @@ function App() {
         countries.filter((c) => c.name.common.match(new RegExp(country, "gi")))
       );
     });
-    console.log(filteredCountries);
   }, [country]);
 
   const handleChange = (event) => {
