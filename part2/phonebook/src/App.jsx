@@ -51,10 +51,10 @@ const App = () => {
     displayNotification(`Added ${newName}`);
   };
 
-  const displayNotification = (text) => {
+  const displayNotification = (text, isError = false) => {
     setMessage({
       text: text,
-      isError: false,
+      isError: isError,
     });
     setTimeout(() => {
       setMessage(null);
@@ -63,8 +63,15 @@ const App = () => {
 
   const handleDelete = (person) => {
     if (confirm(`Delete ${person.name}?`)) {
-      personService.deleteRecord(person.id);
-      displayNotification(`Deleted ${person.name}`);
+      personService
+        .deleteRecord(person.id)
+        .then(() => displayNotification(`Deleted ${person.name}`))
+        .catch(() =>
+          displayNotification(
+            `Information of ${person.name} has already been removed from server`,
+            true
+          )
+        );
       setPersons(persons.filter((p) => p.id !== person.id));
     }
   };
