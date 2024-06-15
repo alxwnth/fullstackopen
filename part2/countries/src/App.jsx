@@ -20,11 +20,18 @@ function App() {
     setCountry(event.target.value);
   };
 
+  const handleShowClick = (countryName) => {
+    setCountry(countryName);
+  };
+
   return (
     <div>
       <label htmlFor="countryFinder">find countries </label>
       <input value={country} onChange={handleChange} id="countryFinder" />
-      <CountryList countries={filteredCountries} />
+      <CountryList
+        countries={filteredCountries}
+        showHandler={handleShowClick}
+      />
     </div>
   );
 }
