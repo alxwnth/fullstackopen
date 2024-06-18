@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const app = express();
+const Person = require("./models/person");
 
 morgan.token("body", (req, res) => JSON.stringify(req.body));
 
@@ -47,7 +48,9 @@ let persons = [
 ];
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.post("/api/persons", (request, response) => {
