@@ -1,16 +1,16 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
+require('dotenv').config()
+const mongoose = require('mongoose')
 
-mongoose.set("strictQuery", false);
+mongoose.set('strictQuery', false)
 
-const url = process.env.MONGODB_URI;
+const url = process.env.MONGODB_URI
 
-console.log("connecting to", url);
+console.log('connecting to', url)
 
 mongoose
   .connect(url)
-  .then((result) => console.log("connected to MongoDB"))
-  .catch((error) => console.log("error connecting to MongoDB:", error.message));
+  .then(() => console.log('connected to MongoDB'))
+  .catch((error) => console.log('error connecting to MongoDB:', error.message))
 
 const personSchema = new mongoose.Schema({
   name: {
@@ -22,21 +22,21 @@ const personSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function (v) {
-        return /\d{2,3}-\d{6,}/.test(v);
+        return /\d{2,3}-\d{6,}/.test(v)
       },
       message: (props) =>
         `${props.value} is not a valid phone number! Must have 2-3 numbers then dash and the rest of the numbers, and have 8 or more numbers total`,
     },
     required: true,
   },
-});
+})
 
-personSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
+personSchema.set('toJSON', {
+  transform: (_document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
   },
-});
+})
 
-module.exports = mongoose.model("Person", personSchema);
+module.exports = mongoose.model('Person', personSchema)
