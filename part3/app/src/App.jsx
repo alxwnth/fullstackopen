@@ -39,16 +39,23 @@ const App = () => {
                 person.id !== foundPerson.id ? person : returnedPerson
               )
             );
+            displayNotification(`Updated ${newName}`);
+            setNewName("");
+            setNewNumber("");
           });
       }
     } else {
-      personService.create(personObject).then((person) => {
-        setPersons(persons.concat(person));
-      });
+      console.log("shouldn't be here");
+      personService
+        .create(personObject)
+        .then((person) => {
+          setPersons(persons.concat(person));
+          displayNotification(`Added ${newName}`);
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => displayNotification(error.response.data.error, true));
     }
-    setNewName("");
-    setNewNumber("");
-    displayNotification(`Added ${newName}`);
   };
 
   const displayNotification = (text, isError = false) => {
