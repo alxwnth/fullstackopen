@@ -42,7 +42,10 @@ const App = () => {
             displayNotification(`Updated ${newName}`);
             setNewName("");
             setNewNumber("");
-          });
+          })
+          .catch((error) =>
+            displayNotification(error.response.data.error, true)
+          );
       }
     } else {
       console.log("shouldn't be here");
