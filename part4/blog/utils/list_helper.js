@@ -30,9 +30,22 @@ const mostBlogs = (blogs) => {
   };
 };
 
+const mostLikes = (blogs) => {
+  const authorGroups = _.groupBy(blogs, (blog) => blog.author);
+  let likeGroups = [];
+  _.forEach(authorGroups, (group, author) => {
+    likeGroups.push({
+      author: author,
+      likes: _.reduce(group, (result, value) => (result += value.likes), 0),
+    });
+  });
+  return _.maxBy(likeGroups, (group) => group.likes);
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
