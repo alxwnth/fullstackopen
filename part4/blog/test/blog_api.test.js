@@ -117,6 +117,38 @@ describe("with initial blogs", () => {
       await api.delete(`/api/blogs/${invalidId}`).expect(400);
     });
   });
+  describe("updating a single blog", async () => {
+    test("succeeds with a valid id", async () => {
+      const initialBlog = {
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 7,
+      };
+      const updatedBlog = {
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 12,
+      };
+
+      const response = await api
+        .post("/api/blogs")
+        .send(initialBlog)
+        .set("Content-Type", "application/json")
+        .expect(201);
+
+      console.log(response.body.id);
+
+      const updatedBlogResponse = await api
+        .put(`/api/blogs/${response.body.id}`)
+        .send(updatedBlog)
+        .set("Content-Type", "application/json")
+        .expect(200);
+
+      assert.strictEqual(updatedBlogResponse.body.likes, updatedBlog.likes);
+    });
+  });
 });
 
 after(async () => {
