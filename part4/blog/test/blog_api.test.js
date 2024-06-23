@@ -35,7 +35,7 @@ describe.only("blog", () => {
       true
     );
   });
-  test.only("is created successfully", async () => {
+  test("is created successfully", async () => {
     const testBlog = {
       title: "React patterns",
       author: "Michael Chan",
@@ -53,6 +53,21 @@ describe.only("blog", () => {
 
     assert.strictEqual(getResponse.body.length, helper.initialBlogs.length + 1);
     assert.strictEqual(response.body.title, "React patterns");
+  });
+  test.only("is created even without likes property", async () => {
+    const testBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+    };
+
+    const response = await api
+      .post("/api/blogs")
+      .send(testBlog)
+      .set("Content-Type", "application/json")
+      .expect(201);
+
+    assert.strictEqual(response.body.likes, 0);
   });
 });
 
