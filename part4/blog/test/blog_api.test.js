@@ -4,13 +4,39 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 const helper = require("./test_helper");
 
 const api = supertest(app);
 
+let jwt;
+
 beforeEach(async () => {
   await Blog.deleteMany({});
-  await Blog.insertMany(helper.initialBlogs);
+  await User.deleteMany({});
+
+  const newUser = {
+    username: "bobsmith",
+    name: "Bob Smith",
+    password: "supersecure",
+  };
+  await api.post("/api/users").send(newUser);
+
+  const userToLogin = {
+    username: "bobsmith",
+    password: "supersecure",
+  };
+
+  jwt = await api.post("/api/login").send(userToLogin);
+
+  for (const blog of helper.initialBlogs) {
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${jwt.body.token}`)
+      .set("Content-Type", "application/json")
+      .send(blog)
+      .expect(201);
+  }
 });
 
 describe("with initial blogs", () => {
@@ -27,18 +53,27 @@ describe("with initial blogs", () => {
   });
 
   describe("viewing a specific blog", async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToView = blogsAtStart[0];
-
-    const resultBlog = await api
-      .get(`/api/blogs/${blogToView.id}`)
-      .expect(200)
-      .expect("Content-Type", /application\/json/);
-
     test("succeeds with a valid id", async () => {
+      const blogsAtStart = await helper.blogsInDb();
+      const blogToView = blogsAtStart[0];
+      blogToView.user = blogToView.user.toString();
+
+      const resultBlog = await api
+        .get(`/api/blogs/${blogToView.id}`)
+        .expect(200)
+        .expect("Content-Type", /application\/json/);
+
       assert.deepStrictEqual(resultBlog.body, blogToView);
     });
     test("has id, not _id", async () => {
+      const blogsAtStart = await helper.blogsInDb();
+      const blogToView = blogsAtStart[0];
+
+      const resultBlog = await api
+        .get(`/api/blogs/${blogToView.id}`)
+        .expect(200)
+        .expect("Content-Type", /application\/json/);
+
       assert.strictEqual(
         resultBlog.body.id !== undefined && resultBlog.body._id === undefined,
         true
@@ -54,8 +89,8 @@ describe("with initial blogs", () => {
       await api.get(`/api/blogs/${invalidId}`).expect(400);
     });
   });
-  describe("adding a new note", () => {
-    test("succeeds with a valid note", async () => {
+  describe("adding a new blog", async () => {
+    test("succeeds with a valid blog", async () => {
       const testBlog = {
         title: "React patterns",
         author: "Michael Chan",
@@ -65,8 +100,9 @@ describe("with initial blogs", () => {
 
       const response = await api
         .post("/api/blogs")
-        .send(testBlog)
+        .set("Authorization", `Bearer ${jwt.body.token}`)
         .set("Content-Type", "application/json")
+        .send(testBlog)
         .expect(201);
 
       const getResponse = await api.get("/api/blogs");
@@ -86,8 +122,9 @@ describe("with initial blogs", () => {
 
       const response = await api
         .post("/api/blogs")
-        .send(testBlog)
+        .set("Authorization", `Bearer ${jwt.body.token}`)
         .set("Content-Type", "application/json")
+        .send(testBlog)
         .expect(201);
 
       assert.strictEqual(response.body.likes, 0);
@@ -99,9 +136,24 @@ describe("with initial blogs", () => {
 
       await api
         .post("/api/blogs")
-        .send(testBlog)
+        .set("Authorization", `Bearer ${jwt.body.token}`)
         .set("Content-Type", "application/json")
+        .send(testBlog)
         .expect(400);
+    });
+    test("fails with status code 401 if token is not present", async () => {
+      const testBlog = {
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 0,
+      };
+
+      await api
+        .post("/api/blogs")
+        .set("Content-Type", "application/json")
+        .send(testBlog)
+        .expect(401);
     });
   });
   describe("deleting a single blog", async () => {
@@ -109,12 +161,18 @@ describe("with initial blogs", () => {
       const blogsAtStart = await helper.blogsInDb();
       const blogToDelete = blogsAtStart[0];
 
-      await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .set("Authorization", `Bearer ${jwt.body.token}`)
+        .expect(204);
     });
     test("fails with statuscode 400 if id is invalid", async () => {
       const invalidId = "5a3d5da59070081a82a3445";
 
-      await api.delete(`/api/blogs/${invalidId}`).expect(400);
+      await api
+        .delete(`/api/blogs/${invalidId}`)
+        .set("Authorization", `Bearer ${jwt.body.token}`)
+        .expect(400);
     });
   });
   describe("updating a single blog", async () => {
@@ -134,16 +192,16 @@ describe("with initial blogs", () => {
 
       const response = await api
         .post("/api/blogs")
-        .send(initialBlog)
+        .set("Authorization", `Bearer ${jwt.body.token}`)
         .set("Content-Type", "application/json")
+        .send(initialBlog)
         .expect(201);
-
-      console.log(response.body.id);
 
       const updatedBlogResponse = await api
         .put(`/api/blogs/${response.body.id}`)
-        .send(updatedBlog)
+        .set("Authorization", `Bearer ${jwt.body.token}`)
         .set("Content-Type", "application/json")
+        .send(updatedBlog)
         .expect(200);
 
       assert.strictEqual(updatedBlogResponse.body.likes, updatedBlog.likes);

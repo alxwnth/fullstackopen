@@ -14,9 +14,11 @@ const tokenExtractor = (request, _, next) => {
 };
 
 const userExtractor = async (request, _, next) => {
-  request.user = await User.findById(
-    jwt.verify(request.token, process.env.SECRET).id
-  );
+  if (request.token) {
+    const userId = jwt.verify(request.token, process.env.SECRET).id;
+    const user = await User.findById(userId);
+    request.user = user;
+  }
   next();
 };
 
