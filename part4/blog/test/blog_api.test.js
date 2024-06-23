@@ -15,25 +15,44 @@ beforeEach(async () => {
   }
 });
 
-describe.only("blogs", () => {
-  test("are returned as json", async () => {
+describe.only("blog", () => {
+  test("list is returned as json", async () => {
     await api
       .get("/api/blogs")
       .expect(200)
       .expect("Content-Type", /application\/json/);
   });
-  test("return correct number", async () => {
+  test("list returns correct number", async () => {
     const response = await api.get("/api/blogs");
 
     assert.strictEqual(response.body.length, helper.initialBlogs.length);
   });
-  test.only("return id, not _id", async () => {
+  test("has id, not _id", async () => {
     const response = await api.get("/api/blogs");
 
     assert.strictEqual(
       response.body[0].id !== undefined && response.body[0]._id === undefined,
       true
     );
+  });
+  test.only("is created successfully", async () => {
+    const testBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 0,
+    };
+
+    const response = await api
+      .post("/api/blogs")
+      .send(testBlog)
+      .set("Content-Type", "application/json")
+      .expect(201);
+
+    const getResponse = await api.get("/api/blogs");
+
+    assert.strictEqual(getResponse.body.length, helper.initialBlogs.length + 1);
+    assert.strictEqual(response.body.title, "React patterns");
   });
 });
 
