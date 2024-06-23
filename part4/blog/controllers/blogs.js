@@ -7,7 +7,15 @@ blogsRouter.get("/", async (_, response) => {
 });
 
 blogsRouter.post("/", async (request, response) => {
-  const blog = new Blog(request.body);
+  const body = request.body;
+
+  if (!body.title || !body.url) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const blog = new Blog(body);
   const result = await blog.save();
 
   response.status(201).json(result);

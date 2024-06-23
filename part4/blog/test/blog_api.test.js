@@ -54,7 +54,7 @@ describe.only("blog", () => {
     assert.strictEqual(getResponse.body.length, helper.initialBlogs.length + 1);
     assert.strictEqual(response.body.title, "React patterns");
   });
-  test.only("is created even without likes property", async () => {
+  test("is created even without likes property", async () => {
     const testBlog = {
       title: "React patterns",
       author: "Michael Chan",
@@ -68,6 +68,17 @@ describe.only("blog", () => {
       .expect(201);
 
     assert.strictEqual(response.body.likes, 0);
+  });
+  test.only("is not created without required fields", async () => {
+    const testBlog = {
+      author: "Michael Chan",
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(testBlog)
+      .set("Content-Type", "application/json")
+      .expect(400);
   });
 });
 
