@@ -15,7 +15,7 @@ beforeEach(async () => {
   }
 });
 
-describe("blogs", () => {
+describe.only("blogs", () => {
   test("are returned as json", async () => {
     await api
       .get("/api/blogs")
@@ -26,6 +26,14 @@ describe("blogs", () => {
     const response = await api.get("/api/blogs");
 
     assert.strictEqual(response.body.length, helper.initialBlogs.length);
+  });
+  test.only("return id, not _id", async () => {
+    const response = await api.get("/api/blogs");
+
+    assert.strictEqual(
+      response.body[0].id !== undefined && response.body[0]._id === undefined,
+      true
+    );
   });
 });
 
