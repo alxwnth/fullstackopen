@@ -10,12 +10,10 @@ const api = supertest(app);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  for (let blog of helper.initialBlogs) {
-    await new Blog(blog).save();
-  }
+  await Blog.insertMany(helper.initialBlogs);
 });
 
-describe.only("blog", () => {
+describe("with initial blogs", () => {
   test("list is returned as json", async () => {
     await api
       .get("/api/blogs")
@@ -27,58 +25,97 @@ describe.only("blog", () => {
 
     assert.strictEqual(response.body.length, helper.initialBlogs.length);
   });
-  test("has id, not _id", async () => {
-    const response = await api.get("/api/blogs");
 
-    assert.strictEqual(
-      response.body[0].id !== undefined && response.body[0]._id === undefined,
-      true
-    );
+  describe("viewing a specific blog", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToView = blogsAtStart[0];
+
+    const resultBlog = await api
+      .get(`/api/blogs/${blogToView.id}`)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    test("succeeds with a valid id", async () => {
+      assert.deepStrictEqual(resultBlog.body, blogToView);
+    });
+    test("has id, not _id", async () => {
+      assert.strictEqual(
+        resultBlog.body.id !== undefined && resultBlog.body._id === undefined,
+        true
+      );
+    });
+    test("fails with statuscode 404 if blog does not exist", async () => {
+      const validNonexistingId = await helper.nonExistingId();
+      await api.get(`/api/blogs/${validNonexistingId}`).expect(404);
+    });
+    test("fails with statuscode 400 if id is invalid", async () => {
+      const invalidId = "5a3d5da59070081a82a3445";
+
+      await api.get(`/api/blogs/${invalidId}`).expect(400);
+    });
   });
-  test("is created successfully", async () => {
-    const testBlog = {
-      title: "React patterns",
-      author: "Michael Chan",
-      url: "https://reactpatterns.com/",
-      likes: 0,
-    };
+  describe("adding a new note", () => {
+    test("succeeds with a valid note", async () => {
+      const testBlog = {
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 0,
+      };
 
-    const response = await api
-      .post("/api/blogs")
-      .send(testBlog)
-      .set("Content-Type", "application/json")
-      .expect(201);
+      const response = await api
+        .post("/api/blogs")
+        .send(testBlog)
+        .set("Content-Type", "application/json")
+        .expect(201);
 
-    const getResponse = await api.get("/api/blogs");
+      const getResponse = await api.get("/api/blogs");
 
-    assert.strictEqual(getResponse.body.length, helper.initialBlogs.length + 1);
-    assert.strictEqual(response.body.title, "React patterns");
+      assert.strictEqual(
+        getResponse.body.length,
+        helper.initialBlogs.length + 1
+      );
+      assert.strictEqual(response.body.title, "React patterns");
+    });
+    test("succeeds even without likes property", async () => {
+      const testBlog = {
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+      };
+
+      const response = await api
+        .post("/api/blogs")
+        .send(testBlog)
+        .set("Content-Type", "application/json")
+        .expect(201);
+
+      assert.strictEqual(response.body.likes, 0);
+    });
+    test("fails with status code 400 if data is invalid", async () => {
+      const testBlog = {
+        author: "Michael Chan",
+      };
+
+      await api
+        .post("/api/blogs")
+        .send(testBlog)
+        .set("Content-Type", "application/json")
+        .expect(400);
+    });
   });
-  test("is created even without likes property", async () => {
-    const testBlog = {
-      title: "React patterns",
-      author: "Michael Chan",
-      url: "https://reactpatterns.com/",
-    };
+  describe("deleting a single blog", async () => {
+    test("succeeds with status code 204 if id is valid", async () => {
+      const blogsAtStart = await helper.blogsInDb();
+      const blogToDelete = blogsAtStart[0];
 
-    const response = await api
-      .post("/api/blogs")
-      .send(testBlog)
-      .set("Content-Type", "application/json")
-      .expect(201);
+      await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    });
+    test("fails with statuscode 400 if id is invalid", async () => {
+      const invalidId = "5a3d5da59070081a82a3445";
 
-    assert.strictEqual(response.body.likes, 0);
-  });
-  test.only("is not created without required fields", async () => {
-    const testBlog = {
-      author: "Michael Chan",
-    };
-
-    await api
-      .post("/api/blogs")
-      .send(testBlog)
-      .set("Content-Type", "application/json")
-      .expect(400);
+      await api.delete(`/api/blogs/${invalidId}`).expect(400);
+    });
   });
 });
 

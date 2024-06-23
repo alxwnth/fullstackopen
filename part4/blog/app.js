@@ -4,7 +4,7 @@ const cors = require("cors");
 const app = express();
 
 const config = require("./utils/config");
-const logger = require("./utils/logger");
+const { unknownEndpoint, errorHandler } = require("./utils/errorHandler");
 
 const blogsRouter = require("./controllers/blogs");
 
@@ -14,5 +14,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/blogs", blogsRouter);
+
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 module.exports = app;
