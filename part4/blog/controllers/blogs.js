@@ -3,14 +3,6 @@ const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
 
-const getTokenFrom = (request) => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.startsWith("Bearer ")) {
-    return authorization.replace("Bearer ", "");
-  }
-  return null;
-};
-
 blogsRouter.get("/", async (_, response) => {
   const blogs = await Blog.find({}).populate("user", { blogs: 0 });
   return response.json(blogs);
@@ -32,7 +24,7 @@ blogsRouter.get("/:id", async (request, response, next) => {
 blogsRouter.post("/", async (request, response) => {
   const body = request.body;
 
-  const encodedToken = getTokenFrom(request);
+  const encodedToken = request.token;
 
   if (!encodedToken)
     return response.status(401).json({ error: "no token provided" });
