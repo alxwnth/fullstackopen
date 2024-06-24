@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import NotificationBox from "./components/NotificationBox";
+import "./style.css";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -52,19 +53,10 @@ const App = () => {
 
     const response = await blogService.create(blogObject);
     setBlogs(blogs.concat(response));
+    displayNotification(`A new blog ${title} added`, false);
     setTitle("");
     setAuthor("");
     setUrl("");
-  };
-
-  const displayNotification = (text, isError = false) => {
-    setMessage({
-      text: text,
-      isError: isError,
-    });
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
   };
 
   const handleLogin = async (event) => {
@@ -77,6 +69,7 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
+      displayNotification(`Welcome, ${user.name}!`, false);
     } catch (e) {
       displayNotification("Wrong credentials", true);
     }
@@ -87,6 +80,17 @@ const App = () => {
 
     setUser(null);
     window.localStorage.removeItem("blogAppUser");
+    displayNotification(`${user.name} logged out`, false);
+  };
+
+  const displayNotification = (text, isError = false) => {
+    setMessage({
+      text: text,
+      isError: isError,
+    });
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   if (user === null) {
@@ -121,6 +125,7 @@ const App = () => {
 
   return (
     <div>
+      <NotificationBox message={message} />
       <h2>blogs</h2>
       <p>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
