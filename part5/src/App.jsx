@@ -38,6 +38,24 @@ const App = () => {
     displayNotification(`A new blog ${response.title} added`, false);
   };
 
+  const incrementLikes = async (id) => {
+    const blog = blogs.find((n) => n.id === id);
+    const changedBlog = { ...blog, likes: blog.likes + 1 };
+    changedBlog.user = blog.user.id;
+    delete changedBlog.id;
+
+    try {
+      const returnedBlog = await blogService.update(id, changedBlog);
+      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
+    } catch (e) {
+      console.error(e);
+      displayNotification(
+        `Blog ${blog.title} was already removed from server`,
+        true
+      );
+    }
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -115,7 +133,11 @@ const App = () => {
         </Togglable>
       </div>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          incrementLikes={() => incrementLikes(blog.id)}
+        />
       ))}
     </div>
   );

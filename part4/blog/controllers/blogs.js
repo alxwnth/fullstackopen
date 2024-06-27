@@ -93,6 +93,7 @@ blogsRouter.put(
       author: body.author,
       url: body.url,
       likes: body.likes,
+      user: body.user,
     };
 
     try {
@@ -102,7 +103,7 @@ blogsRouter.put(
         {
           new: true,
         }
-      );
+      ).populate("user", { blogs: 0 });
       response.json(updatedBlog);
     } catch (e) {
       next(e);
