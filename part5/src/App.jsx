@@ -56,6 +56,24 @@ const App = () => {
     }
   };
 
+  const deleteBlog = async (id) => {
+    const blog = blogs.find((n) => n.id === id);
+
+    if (confirm(`Remove blog ${blog.title}?`)) {
+      try {
+        await blogService.deleteBlog(blog.id);
+        displayNotification(`Blog ${blog.title} was successfully removed`);
+        setBlogs(blogs.filter((b) => b.id !== blog.id));
+      } catch (e) {
+        console.error(e);
+        displayNotification(
+          `Blog ${blog.title} was already removed from server`,
+          true
+        );
+      }
+    }
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -136,7 +154,9 @@ const App = () => {
         <Blog
           key={blog.id}
           blog={blog}
+          currentUser={user}
           incrementLikes={() => incrementLikes(blog.id)}
+          deleteBlog={() => deleteBlog(blog.id)}
         />
       ))}
     </div>

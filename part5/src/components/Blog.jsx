@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Blog = ({ blog, incrementLikes }) => {
+const Blog = ({ blog, incrementLikes, currentUser, deleteBlog }) => {
   const [visible, setVisible] = useState(false);
 
   const hideWhenVisible = { display: visible ? "none" : "" };
@@ -9,6 +9,11 @@ const Blog = ({ blog, incrementLikes }) => {
   const toggleVisibility = () => {
     setVisible(!visible);
   };
+
+  const deleteButton =
+    blog.user.username === currentUser.username ? (
+      <button onClick={deleteBlog}>delete</button>
+    ) : null;
 
   const blogStyle = {
     paddingTop: 10,
@@ -35,6 +40,7 @@ const Blog = ({ blog, incrementLikes }) => {
           <button onClick={incrementLikes}>like</button>
         </p>
         <p>{blog.user.name}</p>
+        {deleteButton}
       </div>
     </div>
   );
