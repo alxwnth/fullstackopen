@@ -3,6 +3,7 @@ module.exports = {
   env: {
     browser: true,
     es2020: true,
+    "vitest-globals/env": true,
   },
   extends: [
     "eslint:recommended",
@@ -10,6 +11,7 @@ module.exports = {
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
     "prettier",
+    "plugin:vitest-globals/recommended",
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
