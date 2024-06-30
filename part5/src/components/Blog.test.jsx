@@ -59,3 +59,25 @@ test("after clicking the button, blog contents are displayed", async () => {
   const blogContents = container.querySelector(".blog-contents");
   expect(blogContents).not.toHaveStyle("display: none;");
 });
+
+test("clicking the button twice calls event handler twice", async () => {
+  const mockHandler = vi.fn();
+
+  const { container } = render(
+    <Blog
+      blog={blog}
+      currentUser={currentUser}
+      incrementLikes={mockHandler}
+      deleteBlog={mockHandler}
+    />
+  );
+
+  const user = userEvent.setup();
+
+  const likeButton = container.querySelector(".like");
+
+  await user.click(likeButton);
+  await user.click(likeButton);
+
+  expect(mockHandler.mock.calls).toHaveLength(2);
+});
