@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require("@playwright/test");
+const { loginWith, createBlog } = require("./helper");
 
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
@@ -20,16 +21,12 @@ describe("Blog app", () => {
 
   describe("Login", () => {
     test("succeeds with correct credentials", async ({ page }) => {
-      await page.getByTestId("username").fill("bob");
-      await page.getByTestId("password").fill("supersecure");
-      await page.getByRole("button", { name: "login" }).click();
+      await loginWith(page, "bob", "supersecure");
       await expect(page.getByText("Bob Smith logged in")).toBeVisible();
     });
 
     test("fails with wrong credentials", async ({ page }) => {
-      await page.getByTestId("username").fill("bob");
-      await page.getByTestId("password").fill("nuh-uh");
-      await page.getByRole("button", { name: "login" }).click();
+      await loginWith(page, "bob", "supersecure");
       const errorDiv = page.locator(".error");
       await expect(errorDiv).toContainText("Wrong credentials");
     });
@@ -37,22 +34,39 @@ describe("Blog app", () => {
 
   describe("When logged in", () => {
     beforeEach(async ({ page }) => {
-      await page.getByTestId("username").fill("bob");
-      await page.getByTestId("password").fill("supersecure");
-      await page.getByRole("button", { name: "login" }).click();
+      await loginWith(page, "bob", "supersecure");
     });
 
-    test.only("a new blog can be created", async ({ page }) => {
-      await page.getByRole("button", { name: "new blog" }).click();
-      await page.getByTestId("blog-title").fill("blog title created with test");
-      await page.getByTestId("blog-author").fill("Blog Author");
-      await page.getByTestId("blog-url").fill("https://example.com");
-      await page.getByRole("button", { name: "Create" }).click();
+    test("a new blog can be created", async ({ page }) => {
+      await createBlog(
+        page,
+        "blog title created with test",
+        "Blog Author",
+        "https://example.com"
+      );
       await expect(
         page
           .getByTestId("blog-header")
           .and(page.getByText("blog title created with test"))
       ).toBeVisible();
+    });
+
+    describe("and a blog exists", () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(
+          page,
+          "blog title created with test",
+          "Blog Author",
+          "https://example.com"
+        );
+      });
+
+      test.only("blog can be liked", async ({ page }) => {
+        await page.getByRole("button", { name: "view" }).click();
+        await page.getByRole("button", { name: "like" }).click();
+        await page.getByText("likes 1").waitFor();
+        await expect(page.getByText("likes 1")).toBeVisible();
+      });
     });
   });
 });
