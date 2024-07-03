@@ -119,6 +119,7 @@ const App = () => {
             <input
               type="text"
               value={username}
+              data-testid="username"
               name="Username"
               onChange={({ target }) => setUsername(target.value)}
             />
@@ -129,6 +130,7 @@ const App = () => {
               type="password"
               value={password}
               name="Password"
+              data-testid="password"
               onChange={({ target }) => setPassword(target.value)}
             />
           </div>
