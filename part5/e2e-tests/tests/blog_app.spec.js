@@ -15,9 +15,7 @@ describe("Blog app", () => {
   });
 
   test("Login form is shown", async ({ page }) => {
-    await expect(
-      await page.getByRole("button", { name: "login" })
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "login" })).toBeVisible();
   });
 
   describe("Login", () => {
@@ -34,6 +32,27 @@ describe("Blog app", () => {
       await page.getByRole("button", { name: "login" }).click();
       const errorDiv = page.locator(".error");
       await expect(errorDiv).toContainText("Wrong credentials");
+    });
+  });
+
+  describe("When logged in", () => {
+    beforeEach(async ({ page }) => {
+      await page.getByTestId("username").fill("bob");
+      await page.getByTestId("password").fill("supersecure");
+      await page.getByRole("button", { name: "login" }).click();
+    });
+
+    test.only("a new blog can be created", async ({ page }) => {
+      await page.getByRole("button", { name: "new blog" }).click();
+      await page.getByTestId("blog-title").fill("blog title created with test");
+      await page.getByTestId("blog-author").fill("Blog Author");
+      await page.getByTestId("blog-url").fill("https://example.com");
+      await page.getByRole("button", { name: "Create" }).click();
+      await expect(
+        page
+          .getByTestId("blog-header")
+          .and(page.getByText("blog title created with test"))
+      ).toBeVisible();
     });
   });
 });
