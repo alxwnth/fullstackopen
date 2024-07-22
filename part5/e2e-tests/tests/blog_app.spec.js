@@ -61,11 +61,22 @@ describe("Blog app", () => {
         );
       });
 
-      test.only("blog can be liked", async ({ page }) => {
+      test("blog can be liked", async ({ page }) => {
         await page.getByRole("button", { name: "view" }).click();
         await page.getByRole("button", { name: "like" }).click();
         await page.getByText("likes 1").waitFor();
         await expect(page.getByText("likes 1")).toBeVisible();
+      });
+
+      test.only("blog can be deleted", async ({ page }) => {
+        page.on("dialog", (dialog) => dialog.accept());
+        await page.getByRole("button", { name: "view" }).click();
+        await page.getByRole("button", { name: "delete" }).click();
+        await expect(
+          page.getByText(
+            "Blog blog title created with test was successfully removed"
+          )
+        ).toBeVisible();
       });
     });
   });

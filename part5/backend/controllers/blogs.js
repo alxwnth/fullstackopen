@@ -44,7 +44,7 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   const user = request.user;
 
   const blog = new Blog(body);
-  blog.user = user.id;
+  blog.user = user;
 
   const savedBlog = await blog.save();
 
