@@ -9,7 +9,7 @@ const setToken = (newToken) => {
 
 const getAll = async () => {
   const response = await axios.get(baseUrl);
-  return response.data.sort((a, b) => b.likes - a.likes);
+  return response.data;
 };
 
 const create = async (newBlog) => {

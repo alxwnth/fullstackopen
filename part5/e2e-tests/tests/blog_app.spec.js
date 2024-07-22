@@ -95,5 +95,38 @@ describe("Blog app", () => {
         ).not.toBeVisible();
       });
     });
+
+    describe("and several blogs exist", () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(
+          page,
+          "one blog",
+          "Blog Author",
+          "https://example.com"
+        );
+        await createBlog(
+          page,
+          "another blog",
+          "Another Author",
+          "https://example.com"
+        );
+      });
+
+      test.only("blogs are arranged by likes", async ({ page }) => {
+        await page.getByRole("button", { name: "view" }).first().click();
+
+        await page
+          .getByRole("button", { name: "like" })
+          .click({ clickCount: 2, delay: 600 });
+
+        await page.getByRole("button", { name: "view" }).last().click();
+        await page
+          .getByRole("button", { name: "like" })
+          .last()
+          .click({ clickCount: 3, delay: 600 });
+
+        expect(page.locator(".blog").first()).toContainText("another blog");
+      });
+    });
   });
 });
