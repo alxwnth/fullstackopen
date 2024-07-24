@@ -8,6 +8,16 @@ const AnecdoteList = () => {
 
   const vote = (id) => {
     dispatch({ type: "anecdotes/voteAnecdote", payload: id });
+    dispatch({
+      type: "notification/setNotification",
+      payload: `you voted '${anecdotes.find((a) => a.id === id).content}'`,
+    });
+    setTimeout(() => {
+      dispatch({
+        type: "notification/setNotification",
+        payload: "",
+      });
+    }, 5000);
   };
   return [...anecdotes]
     .sort((a, b) => b.votes - a.votes)
