@@ -19,6 +19,16 @@ const AnecdoteForm = () => {
         dispatch({ type: "CLEAR" });
       }, 5000);
     },
+    onError: () => {
+      dispatch({
+        type: "SET",
+        payload:
+          "the anecdote is too short, needs to be at least 5 characters long",
+      });
+      setTimeout(() => {
+        dispatch({ type: "CLEAR" });
+      }, 5000);
+    },
   });
 
   const onCreate = (event) => {
