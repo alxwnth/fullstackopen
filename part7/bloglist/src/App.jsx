@@ -14,7 +14,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState(null);
   const dispatch = useDispatch();
 
   const blogFormRef = useRef();
@@ -150,7 +149,7 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <NotificationBox message={message} />
+        <NotificationBox />
         <h2>Log into the application</h2>
         <form onSubmit={handleLogin}>
           <div>
@@ -181,7 +180,7 @@ const App = () => {
 
   return (
     <div>
-      <NotificationBox message={message} />
+      <NotificationBox />
       <h2>blogs</h2>
       <p>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
