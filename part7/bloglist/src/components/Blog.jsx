@@ -1,5 +1,5 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
+import { useState } from "react";
 
 const Blog = ({ blog, incrementLikes, currentUser, deleteBlog }) => {
   const [visible, setVisible] = useState(false);
