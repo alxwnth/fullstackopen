@@ -6,6 +6,8 @@ import NotificationBox from "./components/NotificationBox";
 import "./style.css";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
+import { useDispatch } from "react-redux";
+import { setNotification } from "./reducers/notificationReducer";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -13,6 +15,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
+  const dispatch = useDispatch();
 
   const blogFormRef = useRef();
 
@@ -35,7 +38,12 @@ const App = () => {
     blogFormRef.current.toggleVisibility();
     const response = await blogService.create(blogObject);
     setBlogs(blogs.concat(response));
-    displayNotification(`A new blog ${response.title} added`, false);
+    dispatch(
+      setNotification(
+        { text: `A new blog ${response.title} added`, isError: false },
+        5000
+      )
+    );
   };
 
   const incrementLikes = async (id) => {
@@ -49,9 +57,14 @@ const App = () => {
       setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
     } catch (e) {
       console.error(e);
-      displayNotification(
-        `Blog ${blog.title} was already removed from server`,
-        true
+      dispatch(
+        setNotification(
+          {
+            text: `Blog ${blog.title} was already removed from server`,
+            isError: true,
+          },
+          5000
+        )
       );
     }
   };
@@ -62,13 +75,26 @@ const App = () => {
     if (confirm(`Remove blog ${blog.title}?`)) {
       try {
         await blogService.deleteBlog(blog.id);
-        displayNotification(`Blog ${blog.title} was successfully removed`);
+        dispatch(
+          setNotification(
+            {
+              text: `Blog ${blog.title} was successfully removed`,
+              isError: false,
+            },
+            5000
+          )
+        );
         setBlogs(blogs.filter((b) => b.id !== blog.id));
       } catch (e) {
         console.error(e);
-        displayNotification(
-          `Blog ${blog.title} was already removed from server`,
-          true
+        dispatch(
+          setNotification(
+            {
+              text: `Blog ${blog.title} was already removed from server`,
+              isError: true,
+            },
+            5000
+          )
         );
       }
     }
@@ -84,28 +110,41 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-      displayNotification(`Welcome, ${user.name}!`, false);
+      dispatch(
+        setNotification(
+          {
+            text: `Welcome, ${user.name}!`,
+            isError: false,
+          },
+          5000
+        )
+      );
     } catch (e) {
-      displayNotification("Wrong credentials", true);
+      dispatch(
+        setNotification(
+          {
+            text: "Wrong credentials",
+            isError: true,
+          },
+          5000
+        )
+      );
     }
   };
 
   const handleLogout = (event) => {
     event.preventDefault();
-
     setUser(null);
     window.localStorage.removeItem("blogAppUser");
-    displayNotification(`${user.name} logged out`, false);
-  };
-
-  const displayNotification = (text, isError = false) => {
-    setMessage({
-      text: text,
-      isError: isError,
-    });
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
+    dispatch(
+      setNotification(
+        {
+          text: `${user.name} logged out`,
+          isError: false,
+        },
+        5000
+      )
+    );
   };
 
   if (user === null) {

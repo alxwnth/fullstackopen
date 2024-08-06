@@ -1,5 +1,9 @@
-const NotificationBox = ({ message }) => {
-  if (!message) {
+import { useSelector } from "react-redux";
+
+const NotificationBox = () => {
+  const message = useSelector((state) => state.notification);
+
+  if (message === "") {
     return null;
   }
 
