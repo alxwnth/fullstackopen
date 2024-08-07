@@ -29,7 +29,7 @@ const App = () => {
       <Greeting />
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/users/*" element={<Users />} />
       </Routes>
     </div>
   );
