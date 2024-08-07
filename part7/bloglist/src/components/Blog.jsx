@@ -1,14 +1,66 @@
-import PropTypes from "prop-types";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setNotification } from "../reducers/notificationReducer";
+import blogService from "../services/blogs";
+import { likeBlog, removeBlog } from "../reducers/blogReducer";
+import { Navigate } from "react-router-dom";
 
-const Blog = ({ blog, incrementLikes, currentUser, deleteBlog }) => {
-  const [visible, setVisible] = useState(false);
+const Blog = ({ blog, currentUser }) => {
+  const dispatch = useDispatch();
 
-  const hideWhenVisible = { display: visible ? "none" : "" };
-  const showWhenVisible = { display: visible ? "" : "none" };
+  if (!blog) {
+    return null;
+  }
 
-  const toggleVisibility = () => {
-    setVisible(!visible);
+  const deleteBlog = async (id) => {
+    if (confirm(`Remove blog ${blog.title}?`)) {
+      try {
+        await blogService.deleteBlog(blog.id);
+        <Navigate to="/" />;
+        dispatch(
+          setNotification(
+            {
+              text: `Blog ${blog.title} was successfully removed`,
+              isError: false,
+            },
+            5000
+          )
+        );
+        dispatch(removeBlog(blog.id));
+      } catch (e) {
+        console.error(e);
+        dispatch(
+          setNotification(
+            {
+              text: `Blog ${blog.title} was already removed from server`,
+              isError: true,
+            },
+            5000
+          )
+        );
+      }
+    }
+  };
+
+  const incrementLikes = async () => {
+    const changedBlog = { ...blog, likes: blog.likes + 1 };
+    changedBlog.user = blog.user.id;
+    delete changedBlog.id;
+
+    try {
+      await blogService.update(blog.id, changedBlog);
+      dispatch(likeBlog(blog.id));
+    } catch (e) {
+      console.error(e);
+      dispatch(
+        setNotification(
+          {
+            text: `Blog ${blog.title} was already removed from server`,
+            isError: true,
+          },
+          5000
+        )
+      );
+    }
   };
 
   const deleteButton =
@@ -16,50 +68,20 @@ const Blog = ({ blog, incrementLikes, currentUser, deleteBlog }) => {
       <button onClick={deleteBlog}>delete</button>
     ) : null;
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
   return (
-    <div style={blogStyle}>
-      <div style={hideWhenVisible} className="blog">
-        <div data-testid="blog-header">
-          {blog.title} {blog.author}
-        </div>
-        <button onClick={toggleVisibility} className="toggle-blog">
-          view
+    <div>
+      <h1>{blog.title}</h1>
+      <p>{blog.url}</p>
+      <p>
+        <span>likes {blog.likes} </span>
+        <button onClick={incrementLikes} className="like">
+          like
         </button>
-      </div>
-      <div style={showWhenVisible} className="blog-contents">
-        <p>
-          {blog.title} {blog.author}{" "}
-          <button onClick={toggleVisibility} className="hide">
-            hide
-          </button>
-        </p>
-        <p>{blog.url}</p>
-        <p>
-          <span>likes {blog.likes} </span>
-          <button onClick={incrementLikes} className="like">
-            like
-          </button>
-        </p>
-        <p>{blog.user.name}</p>
-        {deleteButton}
-      </div>
+      </p>
+      <p>added by{blog.user.name}</p>
+      {deleteButton}
     </div>
   );
-};
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  incrementLikes: PropTypes.func.isRequired,
-  currentUser: PropTypes.object.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
 };
 
 export default Blog;
