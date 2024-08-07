@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import { Greeting } from "./components/Greeting";
 import { LoginForm } from "./components/LoginForm";
 import { MainPage } from "./components/MainPage";
@@ -9,9 +9,11 @@ import { Users } from "./components/Users";
 import { setUser } from "./reducers/currentUserReducer";
 import blogService from "./services/blogs";
 import "./style.css";
+import { Navbar } from "./components/Navbar";
 
 const App = () => {
   const dispatch = useDispatch();
+  const [user, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("blogAppUser");
@@ -19,20 +21,24 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON);
       dispatch(setUser(user));
       blogService.setToken(user.token);
+      setCurrentUser(user);
     }
   }, []);
 
-  return (
-    <div>
-      <NotificationBox />
-      <LoginForm />
-      <Greeting />
-      <Routes>
-        <Route path="/*" element={<MainPage />} />
-        <Route path="/users/*" element={<Users />} />
-      </Routes>
-    </div>
-  );
+  if (user) {
+    return (
+      <div>
+        <Navbar />
+        <NotificationBox />
+        <Routes>
+          <Route path="/*" element={<MainPage />} />
+          <Route path="/users/*" element={<Users />} />
+        </Routes>
+      </div>
+    );
+  } else {
+    return <LoginForm />;
+  }
 };
 
 export default App;

@@ -24,9 +24,9 @@ export const Greeting = () => {
   const user = useSelector((state) => state.user);
   if (user) {
     return (
-      <p>
+      <div>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
-      </p>
+      </div>
     );
   }
 };
