@@ -1,8 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../reducers/notificationReducer";
 import blogService from "../services/blogs";
-import { likeBlog, removeBlog } from "../reducers/blogReducer";
+import { likeBlog, removeBlog, addComment } from "../reducers/blogReducer";
 import { Navigate } from "react-router-dom";
+import { CommentForm } from "./CommentForm";
+import commentService from "../services/comments";
+import { CommentList } from "./CommentList";
+import { useEffect, useState } from "react";
 
 const Blog = ({ blog, currentUser }) => {
   const dispatch = useDispatch();
@@ -11,7 +15,7 @@ const Blog = ({ blog, currentUser }) => {
     return null;
   }
 
-  const deleteBlog = async (id) => {
+  const deleteBlog = async () => {
     if (confirm(`Remove blog ${blog.title}?`)) {
       try {
         await blogService.deleteBlog(blog.id);
@@ -63,6 +67,11 @@ const Blog = ({ blog, currentUser }) => {
     }
   };
 
+  const submitNewComment = async (commentObject) => {
+    const response = await commentService.create(blog.id, commentObject);
+    dispatch(addComment({ id: blog.id, comment: response }));
+  };
+
   const deleteButton =
     blog.user.username === currentUser.username ? (
       <button onClick={deleteBlog}>delete</button>
@@ -80,6 +89,8 @@ const Blog = ({ blog, currentUser }) => {
       </p>
       <p>added by{blog.user.name}</p>
       {deleteButton}
+      <CommentForm createComment={submitNewComment} />
+      <CommentList blog={blog} />
     </div>
   );
 };

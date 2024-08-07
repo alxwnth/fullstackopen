@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import notificationReducer from "./reducers/notificationReducer";
-import blogReducer, { setBlogs } from "./reducers/blogReducer";
+import blogReducer from "./reducers/blogReducer";
 import currentUserReducer from "./reducers/currentUserReducer";
+import notificationReducer from "./reducers/notificationReducer";
 
 const store = configureStore({
   reducer: {

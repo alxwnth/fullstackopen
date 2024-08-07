@@ -4,15 +4,19 @@ const Blog = require("../models/blog");
 const middleware = require("../utils/middleware");
 
 blogsRouter.get("/", async (_, response) => {
-  const blogs = await Blog.find({}).populate("user", { blogs: 0 });
+  const blogs = await Blog.find({})
+    .populate("user", { blogs: 0 })
+    .populate("comments", { comment: 1 });
   return response.json(blogs);
 });
 
 blogsRouter.get("/:id", async (request, response, next) => {
   try {
-    const blog = await Blog.findById(request.params.id).populate("user", {
-      blogs: 0,
-    });
+    const blog = await Blog.findById(request.params.id)
+      .populate("user", {
+        blogs: 0,
+      })
+      .populate("comments", { comment: 1 });
     if (blog) {
       response.json(blog);
     } else {
@@ -72,7 +76,7 @@ blogsRouter.delete(
     } catch (e) {
       next(e);
     }
-  },
+  }
 );
 
 blogsRouter.put(
@@ -95,13 +99,13 @@ blogsRouter.put(
         blog,
         {
           new: true,
-        },
+        }
       ).populate("user", { blogs: 0 });
       response.json(updatedBlog);
     } catch (e) {
       next(e);
     }
-  },
+  }
 );
 
 module.exports = blogsRouter;

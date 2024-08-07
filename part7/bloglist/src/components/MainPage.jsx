@@ -19,7 +19,6 @@ export const MainPage = () => {
   }, []);
 
   const addBlog = async (blogObject) => {
-    blogFormRef.current.toggleVisibility();
     const response = await blogService.create(blogObject);
     dispatch(appendBlog(response));
     dispatch(

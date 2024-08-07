@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import comments from "../services/comments";
 
 const blogSlice = createSlice({
   name: "blogs",
@@ -35,6 +36,21 @@ const blogSlice = createSlice({
       return state.map((blog) => (blog.id !== id ? blog : changedBlog));
     },
 
+    addComment(state, action) {
+      const { id, comment } = action.payload;
+
+      const blogToChange = state.find((n) => n.id === id);
+
+      const changedBlog = {
+        ...blogToChange,
+        comments: [...blogToChange.comments, comment],
+      };
+
+      console.log(changedBlog);
+
+      return state.map((blog) => (blog.id !== id ? blog : changedBlog));
+    },
+
     removeBlog(state, action) {
       const id = action.payload;
 
@@ -43,7 +59,13 @@ const blogSlice = createSlice({
   },
 });
 
-export const { createBlog, appendBlog, setBlogs, likeBlog, removeBlog } =
-  blogSlice.actions;
+export const {
+  createBlog,
+  appendBlog,
+  setBlogs,
+  likeBlog,
+  removeBlog,
+  addComment,
+} = blogSlice.actions;
 
 export default blogSlice.reducer;
