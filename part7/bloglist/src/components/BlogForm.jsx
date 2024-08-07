@@ -1,3 +1,5 @@
+import { Button, TextField } from "@mui/material";
+import Box from "@mui/material/Box";
 import { useState } from "react";
 
 const BlogForm = ({ createBlog }) => {
@@ -30,33 +32,32 @@ const BlogForm = ({ createBlog }) => {
   };
 
   return (
-    <form onSubmit={addBlog}>
-      <label htmlFor="blogTitle">title:</label>
-      <input
-        id="blogTitle"
+    <Box component="form" noValidate autoComplete="off" onSubmit={addBlog}>
+      <TextField
+        label="Title"
+        fullWidth
         value={title}
+        margin="normal"
         onChange={handleTitleChange}
-        data-testid="blog-title"
-      ></input>
-      <br />
-      <label htmlFor="blogAuthor">author:</label>
-      <input
-        id="blogAuthor"
+      />
+      <TextField
+        label="Author"
+        fullWidth
         value={author}
+        margin="normal"
         onChange={handleAuthorChange}
-        data-testid="blog-author"
-      ></input>
-      <br />
-      <label htmlFor="blogUrl">url:</label>
-      <input
-        id="blogUrl"
+      />
+      <TextField
+        label="URL"
+        fullWidth
         value={url}
+        margin="normal"
         onChange={handleUrlChange}
-        data-testid="blog-url"
-      ></input>
-      <br />
-      <input type="submit" value="Create" id="submitBlog" />
-    </form>
+      />
+      <Button variant="contained" type="submit">
+        Add
+      </Button>
+    </Box>
   );
 };
 

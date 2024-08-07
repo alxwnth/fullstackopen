@@ -4,6 +4,8 @@ import { setUser } from "../reducers/currentUserReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import blogService from "../services/blogs";
 import loginService from "../services/login";
+import { Button, TextField } from "@mui/material";
+import Box from "@mui/material/Box";
 
 export const LoginForm = () => {
   const dispatch = useDispatch();
@@ -49,29 +51,31 @@ export const LoginForm = () => {
     return (
       <div>
         <h2>Log into the application</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              type="text"
-              value={username}
-              data-testid="username"
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-            <input
-              type="password"
-              value={password}
-              name="Password"
-              data-testid="password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          onSubmit={handleLogin}
+        >
+          <TextField
+            label="Username"
+            fullWidth
+            value={username}
+            margin="normal"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+          <TextField
+            type="password"
+            fullWidth
+            label="Password"
+            value={password}
+            margin="normal"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+          <Button variant="contained" type="submit">
+            Login
+          </Button>
+        </Box>
       </div>
     );
   }

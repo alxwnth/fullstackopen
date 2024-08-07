@@ -1,15 +1,16 @@
+import { Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, Route, Routes } from "react-router-dom";
-import { Greeting } from "./components/Greeting";
+import { Route, Routes } from "react-router-dom";
 import { LoginForm } from "./components/LoginForm";
 import { MainPage } from "./components/MainPage";
+import { Navbar } from "./components/Navbar";
 import NotificationBox from "./components/NotificationBox";
 import { Users } from "./components/Users";
+import { Greeting } from "./components/Greeting";
 import { setUser } from "./reducers/currentUserReducer";
 import blogService from "./services/blogs";
 import "./style.css";
-import { Navbar } from "./components/Navbar";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -27,14 +28,17 @@ const App = () => {
 
   if (user) {
     return (
-      <div>
-        <Navbar />
-        <NotificationBox />
-        <Routes>
-          <Route path="/*" element={<MainPage />} />
-          <Route path="/users/*" element={<Users />} />
-        </Routes>
-      </div>
+      <>
+        <Greeting />
+        <Container>
+          <NotificationBox />
+          <Routes>
+            <Route path="/*" element={<MainPage />} />
+            <Route path="/users/*" element={<Users />} />
+          </Routes>
+          <Navbar />
+        </Container>
+      </>
     );
   } else {
     return <LoginForm />;

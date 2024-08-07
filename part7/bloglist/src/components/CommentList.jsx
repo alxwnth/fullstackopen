@@ -1,9 +1,11 @@
+import { List, ListItem } from "@mui/material";
+
 export const CommentList = ({ blog }) => {
   return (
-    <ul>
+    <List>
       {blog.comments.map((comment) => (
-        <li key={comment.id}>{comment.comment}</li>
+        <ListItem key={comment.id}>{comment.comment}</ListItem>
       ))}
-    </ul>
+    </List>
   );
 };

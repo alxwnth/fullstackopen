@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import usersService from "../services/users";
 import { User } from "./User";
 import { Link, Route, Routes, useMatch } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 
 export const Users = () => {
   const [users, setUsers] = useState([]);
@@ -19,24 +26,24 @@ export const Users = () => {
         <Route
           path="/"
           element={
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>blogs created</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell></TableCell>
+                  <TableCell>blogs created</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {users.map((user) => (
-                  <tr key={user.username}>
-                    <td>
+                  <TableRow key={user.username}>
+                    <TableCell>
                       <Link to={`/users/${user.id}`}>{user.username}</Link>
-                    </td>
-                    <td>{user.blogs.length}</td>
-                  </tr>
+                    </TableCell>
+                    <TableCell>{user.blogs.length}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           }
         />
         <Route path=":id" element={<User user={user} />} />

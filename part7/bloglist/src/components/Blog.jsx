@@ -1,12 +1,19 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
+import { addComment, likeBlog, removeBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import blogService from "../services/blogs";
-import { likeBlog, removeBlog, addComment } from "../reducers/blogReducer";
-import { Navigate } from "react-router-dom";
-import { CommentForm } from "./CommentForm";
 import commentService from "../services/comments";
+import { CommentForm } from "./CommentForm";
 import { CommentList } from "./CommentList";
-import { useEffect, useState } from "react";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 const Blog = ({ blog, currentUser }) => {
   const dispatch = useDispatch();
@@ -74,24 +81,34 @@ const Blog = ({ blog, currentUser }) => {
 
   const deleteButton =
     blog.user.username === currentUser.username ? (
-      <button onClick={deleteBlog}>delete</button>
+      <Button onClick={deleteBlog} variant="outlined">
+        Delete
+      </Button>
     ) : null;
 
   return (
-    <div>
-      <h1>{blog.title}</h1>
-      <p>{blog.url}</p>
-      <p>
-        <span>likes {blog.likes} </span>
-        <button onClick={incrementLikes} className="like">
-          like
-        </button>
-      </p>
-      <p>added by{blog.user.name}</p>
-      {deleteButton}
+    <Stack spacing={2}>
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="h3">{blog.title}</Typography>
+          <Typography variant="subtitle1">added by{blog.user.name}</Typography>
+          <Typography variant="body1" gutterBottom>
+            {blog.url}
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            Likes: {blog.likes}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button onClick={incrementLikes} variant="outlined">
+            like
+          </Button>
+          {deleteButton}
+        </CardActions>
+      </Card>
       <CommentForm createComment={submitNewComment} />
       <CommentList blog={blog} />
-    </div>
+    </Stack>
   );
 };
 

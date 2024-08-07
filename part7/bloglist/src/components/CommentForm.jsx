@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button, TextField } from "@mui/material";
 
 export const CommentForm = ({ createComment }) => {
   const [comment, setComment] = useState("");
@@ -9,21 +10,23 @@ export const CommentForm = ({ createComment }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // console.log(comment);
     createComment(comment);
     setComment("");
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="blogTitle">comment:</label>
-      <input
-        id="blogComment"
+      <TextField
+        label="Comment"
+        fullWidth
         value={comment}
         onChange={handleCommentChange}
         min={1}
-      ></input>
-      <input type="submit" value="Create" id="submitComment" />
+        margin="normal"
+      />
+      <Button variant="contained" type="submit">
+        Create
+      </Button>
     </form>
   );
 };
